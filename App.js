@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Map from './component/Map'
 import NewPlace from './component/NewPlace';
+import Header from './component/NewPlace';
 
 const Stack = createStackNavigator();
 

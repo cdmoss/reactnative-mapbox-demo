@@ -6,33 +6,60 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 const NewPlace = ({route, navigation}) => {
-    const [descriptionText, setText] = useState('');
-    const onDescChange = (desc) => setText(desc); 
+    const [description, setDesc] = useState('');
+    const [name, setName] = useState('');
+    const onDescChange = (desc) => setDesc(desc); 
+    const onNameChange = (name) => setName(name); 
     const { coords } = route.params;
 
-    const addPlace = () => {
-        Alert.alert("Place saved to database.");
-        navigation.navigate("Map");
+    const addPlace = async () => {
+      const place = {
+        lat: coords[1],
+        lng: coords[0],
+        desc: description,
+        name: name
+      };
+      
+      console.log(JSON.stringify(place));
+
+      await fetch("http://chasemossing.com:8000/api/places/", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(place),
+      }).then(response => {
+        if (response.ok) {
+          Alert.alert("Place saved to database.")
+          navigation.navigate("Map", {newCoords: coords});
+        }
+        else {
+          Alert.alert("Something went wrong when adding a new place", `Response code: ${response.status}`)
+        }
+      })
+        .catch(error => Alert.alert("Something went wrong when talking to the server",error));
     }
 
     return(
-    <View style={styles.container}>
-        <Text style={styles.title}>Add new place for the following coordinates:</Text>
-        <Text>Longitude: {coords[0]}</Text>
-        <Text>Latitude: {coords[1]}</Text>
-        <Text>{'\n'}</Text>
-        <Text>Description:</Text>
-        <TextInput style={styles.desc} placeholder="Place description..." onChange={onDescChange}></TextInput>
-        <TouchableOpacity 
-            onPress={() => addPlace({
-                id: uuidv4(),
-                description: descriptionText,
-                coords: coords
-            })} 
+      <View style={styles.container}>
+          <Text style={styles.title}>Add new place for the following coordinates:</Text>
+          <Text>Longitude: {coords[0]}</Text>
+          <Text>Latitude: {coords[1]}</Text>
+          <Text>{'\n'}</Text>
+          <Text>Your name:</Text>
+          <TextInput 
+            style={styles.input} 
+            placeholder="Enter name..." 
+            onChangeText={onNameChange}></TextInput>
+          <Text>Description:</Text>
+          <TextInput 
+            style={styles.input} 
+            placeholder="Enter place description..." 
+            onChangeText={onDescChange}></TextInput>
+          <TouchableOpacity 
+            onPress={() => addPlace()}
             style={styles.btn}>
-            <Text style={styles.btnText}>+ Add Place</Text>
-        </TouchableOpacity>
-    </View>
+              <Text style={styles.btnText}>+ Add Place</Text>
+          </TouchableOpacity>
+      </View>
     )
 }
 
@@ -47,7 +74,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 10
   },
-  desc: {
+  input: {
     height: 40,
     borderWidth: 1,
     borderColor: "grey",
