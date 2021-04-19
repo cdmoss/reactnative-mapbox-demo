@@ -39,7 +39,6 @@ const Map = ({navigation, route}) => {
         coords: coords,
         desc: "temp point"}, ...prevPlaces]
     })
-
     setCenter(coords);
   }
 
@@ -47,10 +46,12 @@ const Map = ({navigation, route}) => {
     console.log(id);
     for (let index = 0; index < tempPlaces.length; index++) {
       if (tempPlaces[index].id == id) {
-        tempPlaces.pop(tempPlaces[index]);
+        const placesCopy = tempPlaces.filter(place => place !== tempPlaces[index]);
+        setTempPlaces(placesCopy);
         return;
       }
     }
+    
     await fetch(`http://chasemossing.com:8000/api/places/${id}/`, {
       method: 'DELETE'
     }).then(response => {
@@ -80,6 +81,20 @@ const Map = ({navigation, route}) => {
 
   const focusPoint = (id) => {
     let place;
+    for (let index = 0; index < tempPlaces.length; index++) {
+      if (tempPlaces[index].id == id) {
+        place = tempPlaces[index];
+        console.log(place);
+        Alert.alert(
+          `Temporary Place`, 
+          `Coordinates:\n  lat - (${place.coords[1]})\n  lat - (${place.coords[1]})`,
+          [
+            {text: 'Delete place', onPress:() => deletePoint(id), style: "cancel"}, 
+            {text: 'Do nothing'}
+          ]);
+        return;
+      }
+    }
     for (let index = 0; index < apiPlaces.length; index++) {
       if (apiPlaces[index].id == id) {
         place = apiPlaces[index];
@@ -114,13 +129,19 @@ const Map = ({navigation, route}) => {
             {apiPlaces.length > 0 && apiPlaces.map(place => {
               const coords = [parseFloat(place.lng), parseFloat(place.lat)];
               return ( 
-              <MapboxGL.PointAnnotation style={{color: 'red'}} onSelected={e => focusPoint(e.properties.id)} key={place.id.toString()} id={place.id.toString()} coordinate={coords}/>)
+              <MapboxGL.PointAnnotation 
+                onSelected={e => focusPoint(e.properties.id)} 
+                key={place.id.toString()} id={place.id.toString()} coordinate={coords}/>)
             })}
             {tempPlaces.length > 0 && tempPlaces.map(place => {
-              return <MapboxGL.PointAnnotation key={place.id} id={place.id} coordinate={place.coords}>
-                <View style={{height: 20, width: 20 }}>
+              return (
+              <MapboxGL.PointAnnotation 
+                onSelected={e => focusPoint(e.properties.id)} 
+                key={place.id} id={place.id} 
+                coordinate={place.coords}>
+                <View style={{height: 10, width: 10, borderRadius: 50, backgroundColor: '#FFF' }}>
                 </View>
-              </MapboxGL.PointAnnotation>
+              </MapboxGL.PointAnnotation>)
             })}
         </MapboxGL.MapView>
       </View>
