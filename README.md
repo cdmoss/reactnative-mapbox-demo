@@ -1,5 +1,5 @@
 # reactnative-mapbox-demo
-A super basic implementation of mapbox using react native
+A super basic implementation of mapbox in react-native using https://github.com/react-native-mapbox-gl/maps
 
 Consumes an django rest API hosted on http://chasemossing.com:8000/api/places using djangorestframework's default viewset config.
 
