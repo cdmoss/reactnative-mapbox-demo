@@ -1,9 +1,7 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TextInput, Text, TouchableOpacity, View, Alert} from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values'
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import GLOBALS from "../Globals"
 
 const NewPlace = ({route, navigation}) => {
     const [description, setDesc] = useState('');
@@ -22,7 +20,7 @@ const NewPlace = ({route, navigation}) => {
       
       console.log(JSON.stringify(place));
 
-      await fetch("http://chasemossing.com:8000/api/places/", {
+      await fetch(GLOBALS.API_HOST, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(place),

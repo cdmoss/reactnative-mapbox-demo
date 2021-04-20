@@ -7,12 +7,13 @@ import 'react-native-get-random-values'
 import { useFocusEffect } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { template } from '@babel/core';
+import GLOBALS from "../Globals";
  
 MapboxGL.setAccessToken('pk.eyJ1IjoiY2Rtb3NzIiwiYSI6ImNrbmhuOXJzcDIyd20ycW1pYm8xaGI0aGUifQ.j04Sp636N9Wg4N9j9t2tXw');
 
 const Map = ({navigation, route}) => {
   const getApiPlaces = async () => {
-    const response = await fetch("http://chasemossing.com:8000/api/places/");
+    const response = await fetch(GLOBALS.API_HOST);
     const placeData = await response.json();
     setApiPlaces(placeData);
   }
@@ -52,7 +53,7 @@ const Map = ({navigation, route}) => {
       }
     }
     
-    await fetch(`http://chasemossing.com:8000/api/places/${id}/`, {
+    await fetch(`${GLOBALS.API_HOST}${id}/`, {
       method: 'DELETE'
     }).then(response => {
       if (response.ok) {
